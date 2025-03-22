@@ -1,0 +1,221 @@
+body, .input-box textarea {
+    font-family:"Poppins", sans-serif;
+}
+
+h3 {
+    font-size: 15px;
+    font-weight: 200;
+    margin: 0px;
+}
+
+h1 {
+    margin: 20px 0px 0px;
+}
+
+.chat {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: calc(100vw - 270px);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: rgb(44, 40, 40);
+    z-index: 0;
+}
+
+.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 230px;
+    height: 100vh;
+    background-color: #201c1c;
+    color: rgb(255, 240, 240);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+    padding: 0px 20px 0px;
+}
+
+.input-box {
+    background-color: #554b4b;
+    color: #9e8f8f;
+    margin-bottom: 80px;
+    width: 70%;
+    padding: 5px 10px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: outset #c7acac6b;
+}
+
+.input-box textarea {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: none;
+    color: white;
+    font-size: 16px;
+    padding: 5px;
+    resize: none;
+    min-height: 40px;
+    max-height: 150px;
+    width: 100%;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.input-box textarea::-webkit-scrollbar {
+    display: none;
+}
+
+.input-box textarea {
+    scrollbar-width: none;
+}
+
+.input-box button {
+    width: 36px;
+    height: 36px;
+    background-color: #dfcece;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.input-box button:hover {
+    background-color: #bd9e9e;
+}
+
+.input-box button svg {
+    position: relative;
+    right: 1px;
+    width: 20px;
+    height: 20px;
+}
+
+#chat-container {
+    background-color: #201c1c;
+    color: rgb(102, 95, 95);
+    height: 60%;
+    margin-bottom: 40px;
+    margin-top: 40px;
+    width: 70%;
+    padding: 10px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border: outset #c7acac6b;
+
+
+}
+
+.user-message {
+    background-color: #ffeded;
+    color: #333;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 5px;
+    align-self: flex-end;
+    max-width: 60%;
+    word-wrap: break-word;
+}
+
+.ia-message {
+    background-color: #f1f0f0;
+    color: #333;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 5px;
+    align-self: flex-start;
+    max-width: 60%;
+    word-wrap: break-word;
+}
+
+#chat-container::-webkit-scrollbar {
+    width: 20px;
+}
+
+#chat-container::-webkit-scrollbar-track {
+    background: #3a3434;
+    border-radius: 10px;
+    background-clip: content-box;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    border: 5px solid transparent;
+    
+}
+
+#chat-container::-webkit-scrollbar-thumb {
+    background: #948989;
+    border-radius: 10px;
+    background-clip: content-box;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    border: 5px solid transparent;
+
+    
+}
+
+#chat-container::-webkit-scrollbar-thumb:hover {
+    background: rgb(114, 105, 105)434;
+}
+
+
+.message-header {
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 5px;
+}
+
+
+.user-message .message-header {
+    text-align: right;
+}
+
+.ia-message .message-header {
+    text-align: left;
+}
+/* Ajoutez cette section à votre CSS */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-message, .ia-message {
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+.message-disappear {
+    animation: fadeOut 0.8s ease-in-out forwards;
+}
+
+/* Ajoutez cette section à votre CSS */
+#chat-container {
+    scroll-behavior: smooth;
+}
