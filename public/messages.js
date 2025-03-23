@@ -1,6 +1,6 @@
 document.getElementById("msg").addEventListener("keydown", function(event) {
     if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault(); // Empêche le retour à la ligne
+        event.preventDefault();
         send_to_ia();
     }
 });
@@ -33,6 +33,39 @@ function send_to_ia() {
 
         document.getElementById("msg").value = "";
 
+        // Création de l'élément de chargement
+        const iaWrapper = document.createElement("div");
+        iaWrapper.style.display = "flex";
+        iaWrapper.style.flexDirection = "column";
+        iaWrapper.style.alignItems = "flex-start";
+        iaWrapper.className = "ia-wrapper-loading";
+
+        const iaHeader = document.createElement("div");
+        iaHeader.className = "message-header";
+        iaHeader.textContent = "Californyan";
+        iaHeader.style.marginLeft = "53px";
+
+        const iaMessageContainer = document.createElement("div");
+        iaMessageContainer.className = "ia-message-container";
+
+        const loadingIcon = document.createElement("div");
+        loadingIcon.className = "loading-icon";
+        loadingIcon.style.width = "30px";
+        loadingIcon.style.height = "30px";
+        loadingIcon.style.border = "4px solid rgba(128, 109, 109, 0.42)";
+        loadingIcon.style.borderTop = "4px solid #c7acac6b";
+        loadingIcon.style.borderRadius = "50%";
+        loadingIcon.style.animation = "spin 1s linear infinite";
+        loadingIcon.style.marginRight = "7px";
+        loadingIcon.style.marginLeft = "7px";
+        loadingIcon.style.marginTop = "7px";
+        loadingIcon.style.flexShrink = "0";
+
+        iaMessageContainer.appendChild(loadingIcon);
+        iaWrapper.appendChild(iaHeader);
+        iaWrapper.appendChild(iaMessageContainer);
+        chatContainer.appendChild(iaWrapper);
+
         setTimeout(() => {
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }, 100);
@@ -41,7 +74,13 @@ function send_to_ia() {
 
 socket.on("msg_ia", data => {
     const chatContainer = document.getElementById("chat-container");
-
+    
+    // Supprimer l'élément de chargement
+    const loadingElement = document.querySelector(".ia-wrapper-loading");
+    if (loadingElement) {
+        loadingElement.remove();
+    }
+    
     const iaWrapper = document.createElement("div");
     iaWrapper.style.display = "flex";
     iaWrapper.style.flexDirection = "column";
@@ -53,16 +92,14 @@ socket.on("msg_ia", data => {
     iaHeader.style.marginLeft = "53px";
 
     const iaMessageContainer = document.createElement("div");
-    iaMessageContainer.style.display = "flex";
-    iaMessageContainer.style.alignItems = "center"; 
+    iaMessageContainer.className = "ia-message-container";
 
     const iaIcon = document.createElement("img");
+    iaIcon.className = "icon-img";
     iaIcon.src = "/image/californyan_icon.png";
     iaIcon.alt = "Icon de Californyan";
-    iaMessageContainer.style.alignItems = "flex-start";
     iaIcon.style.marginRight = "7px";
     iaIcon.style.marginTop = "7px";
-
     iaIcon.style.flexShrink = "0";
     iaIcon.style.width = "40px";
 
@@ -73,7 +110,7 @@ socket.on("msg_ia", data => {
 
     iaMessageContainer.appendChild(iaIcon);
     iaMessageContainer.appendChild(iaMessage);
-
+    
     iaWrapper.appendChild(iaHeader);
     iaWrapper.appendChild(iaMessageContainer);
     chatContainer.appendChild(iaWrapper);
@@ -82,3 +119,23 @@ socket.on("msg_ia", data => {
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }, 100);
 });
+
+socket.on("audio_result", data => {
+    const url = `/audio/${data.fileName}`;
+    const audio = new Audio(url);
+    audio.play();
+});
+
+socket.on("audio_error", data => {
+    console.error('Error generating audio:', data.message);
+});
+
+// Ajout du CSS pour l'animation du chargement
+document.head.insertAdjacentHTML("beforeend", `
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+`);

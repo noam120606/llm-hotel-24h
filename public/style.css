@@ -185,7 +185,6 @@ h1 {
 .ia-message .message-header {
     text-align: left;
 }
-/* Ajoutez cette section à votre CSS */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -197,7 +196,7 @@ h1 {
     }
 }
 
-.user-message, .ia-message {
+.user-message, .ia-message, .icon-img {
     animation: fadeIn 0.8s ease-in-out;
 }
 
@@ -215,7 +214,28 @@ h1 {
     animation: fadeOut 0.8s ease-in-out forwards;
 }
 
-/* Ajoutez cette section à votre CSS */
 #chat-container {
     scroll-behavior: smooth;
 }
+.ia-message-container {
+    display: flex;
+    align-items: center;
+}
+
+.ia-message button {
+    margin-left: 10px;
+    width: 30px;
+    height: 30px;
+    background-color: #dfcece;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.ia-message button:hover {
+    background-color: #bd9e9e;
+}
+

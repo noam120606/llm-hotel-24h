@@ -1,6 +1,9 @@
 const express = require('express');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
+const session = require("express-session");
+const LLM = require('../Apis/Mistral/index.js');
+const tts = require("./tts");
 
 class Webmanager {
     constructor(bot) {
@@ -21,6 +24,13 @@ class Webmanager {
         this.app.use(express.static('public'));
         this.app.set('view engine', 'ejs');
         this.app.set('views', 'views');
+        const sessionMiddleware = session({
+            secret: process.env.SESSION_SECRET,
+            resave: false,
+            saveUninitialized: false
+        });
+        this.app.use(sessionMiddleware);
+        this.io.engine.use(sessionMiddleware);
     }
 
     loadRoutes() {
@@ -29,19 +39,24 @@ class Webmanager {
         });
     }
 
-    loadSockets() {
+    loadSockets() { 
+        
         this.io.on('connection', (socket) => {
             this.bot.log(`Socket connected: ${socket.id}`, 'debug');
 
-            socket.on('msg_user', (data) => {
-                console.log(data.content);
+            const ia = new LLM(this.bot, socket);
+    
+            socket.on('msg_user', async (data) => {
+                const response = await ia.getResponse(data.content);
                 socket.emit('msg_ia', {
-                    content: data.content.toUpperCase(),
+                    content: response,
                 });
             });
-
+    
+            socket.on('audio_request', data => tts(socket, data) );
         });
     }
+    
 }
 
 module.exports = Webmanager;
