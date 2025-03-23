@@ -1,32 +1,50 @@
 const fs = require('fs');
+
 const { ChatMistralAI } = require("@langchain/mistralai");
-const { HumanMessage } = require("@langchain/core/messages");
 const { ChatGoogleGenerativeAI } = require("@langchain/google-genai");
 
+const { TavilySearchResults } = require("@langchain/community/tools/tavily_search");
+const { MemorySaver } = require("@langchain/langgraph");
+const { createReactAgent } = require("@langchain/langgraph/prebuilt");
+const { CallbackHandler } = require("langfuse-langchain");
+
 require('dotenv').config();
+
+const prompt = require('prompt-sync')();
 
 class LLM {
     constructor(type = "mistral") {
         this.type = type;
+        this.langfuseHandler = new CallbackHandler();
+
+        let agentCheckpointer = new MemorySaver();
+        let agentModel;
+
         switch(type) {
             case "mistral":
-                this.llm = new ChatMistralAI({
+                agentModel = new ChatMistralAI({
                     model: "mistral-large-latest",
                     apiKey: process.env.MISTRALAI_API_KEY,
                     temperature:0
                   });
                 break;
             case "gemini" :
-                this.llm = new ChatGoogleGenerativeAI({
+                agentModel = new ChatGoogleGenerativeAI({
                     model: "gemini-1.5-pro",
                     temperature: 0,
                     maxRetries: 2,
                     apiKey: process.env.GOOGLE_API_KEY
-                  });
+                });
                 break;
         }
 
-        this.loadTools();
+        this.agent = createReactAgent({
+            llm: agentModel,
+            tools: [new TavilySearchResults({ maxResults: 3 })].concat(this.loadTools()),
+            checkpointSaver: agentCheckpointer
+        });
+
+        
     }
 
     loadTools() {
@@ -36,40 +54,28 @@ class LLM {
             this.toolsByName[file.split('.')[0]] = require(`./tools/${file}`);
             tools.push(require(`./tools/${file}`));
         })
-        this.llm = this.llm.bindTools(tools);
+        return tools;
     }
     async getResponse(userPrompt) {
-        let messages;
-        switch (this.type) {
-            case "mistral":
-                messages = [new HumanMessage(userPrompt)];
-                const aiMessage = await this.llm.invoke(messages);
-                messages.push(aiMessage);
-
-                for (const toolCall of aiMessage.tool_calls) {
-                    const selectedTool = this.toolsByName[toolCall.name];
-                    const toolMessage = await selectedTool.invoke(toolCall);
-                    messages.push(toolMessage);
-                }
-
-                return await this.llm.invoke(messages);
-                break;
-            case "gemini":
-                const toolRes = await this.llm.invoke([
-                    [
-                        "human",
-                        userPrompt,
-                    ],
-                ]);
-                console.log(toolRes)
-                break;
-        }   
-        
+        const messages = await this.agent.invoke(
+            { messages: userPrompt },
+            { 
+                configurable: { thread_id: "42" },
+                callbacks: [this.langfuseHandler]
+            },
+        );
+        return messages.messages[messages.messages.length - 1].content;
     }
 }
 
-const ai = new LLM("gemini");
 
-ai.getResponse("Quel est le nom du client Sami").then((response) => {
-    console.log(response);
-});
+async function main() {
+    const ai = new LLM();
+
+    for (let i = 0; i < 10; i++) {
+        await ai.getResponse(prompt("Question : ")).then((response) => {
+            console.log(response);
+        });
+    }
+}
+main()
