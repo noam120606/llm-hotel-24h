@@ -4,7 +4,13 @@ const { tool } = require("@langchain/core/tools");
 module.exports = (bot, socket) => {
     return tool(
         async (data) => {
-            return bot.api.hotel.client.create(data);
+            data.room_number = Math.floor(Math.random() * 1000);
+            const response = await bot.api.hotel.clients.create(data);
+            console.log(response);
+            return `
+                Client créé avec succès
+                Numéro de chambre: ${data.room_number}
+            `;
         },
         {
             name: "creerClient",
@@ -13,7 +19,7 @@ module.exports = (bot, socket) => {
                 phone_number: z.string(),
                 special_requests: z.string(),
             }),
-            description: "Creer un client",
+            description: "Creer un client et lui donner une chambre d'hotel",
         }
     );
 }

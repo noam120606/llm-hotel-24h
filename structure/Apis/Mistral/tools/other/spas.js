@@ -5,16 +5,14 @@ const { tool } = require("@langchain/core/tools");
 module.exports = (bot, socket) => {
     return tool(
         async () => {
-            console.log("a");
-
-            return bot.api.hotel.spas.getList().map(s => ({
-                name: s.name,
-                description: s.description,
-                location: s.location,
-                phone_number: s.phone_number,
-                email: s.email,
-                opening_hours: s.opening_hours
-            }));
+            return bot.api.hotel.spas.getList().map(s => `
+                ${s.name}
+                ${s.description}
+                ${s.location}
+                ${s.phone_number}
+                ${s.email}
+                ${s.opening_hours}
+            `).join('\n\n');
         },
         {
             name: "getRestaurants",

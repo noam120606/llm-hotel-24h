@@ -2,11 +2,16 @@ const axios = require('axios');
 
 module.exports = async (url, method, headers={}, body={}) => {
 
-    /*
+    if (method == "POST" && !url.endsWith("/")) url += "/";
+    if (method == "PATCH" && !url.endsWith("/")) url += "/";
+    if (method == "PUT" && !url.endsWith("/")) url += "/";
+
+    console.log(`------------------`);
     console.log(`[API REQUEST]: ${method} ${url}`);
     console.log(`[API HEADERS]: ${JSON.stringify(headers)}`);
     console.log(`[API BODY]: ${JSON.stringify(body)}`);
-    */
+    console.log(`------------------`);
+    
 
     switch (method) {
         case 'GET':

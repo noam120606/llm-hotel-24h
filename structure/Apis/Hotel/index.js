@@ -7,7 +7,7 @@ const Infos = require('./class/Infos.js');
 
 class HotelApi {
     constructor(bot) {
-        this.base = 'http://app-584240518682.europe-west9.run.app/api';
+        this.base = 'http://194.15.36.132:20003/api';
         this.bot = bot;
 
         this.meals = new Meals(bot, this);

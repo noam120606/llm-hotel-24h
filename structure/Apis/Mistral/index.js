@@ -6,13 +6,13 @@ const { TavilySearchResults } = require("@langchain/community/tools/tavily_searc
 const { MemorySaver } = require("@langchain/langgraph");
 const { createReactAgent } = require("@langchain/langgraph/prebuilt");
 const { CallbackHandler } = require("langfuse-langchain");
-
-const prompt = require('prompt-sync')();
+const { setContextVariable } = require("@langchain/core/context");
 
 class LLM {
     constructor(bot, socket, type = "mistral") {
         this.bot = bot;
         this.socket = socket;
+
         this.type = type;
         this.langfuseHandler = new CallbackHandler();
 
@@ -43,6 +43,7 @@ class LLM {
             checkpointSaver: agentCheckpointer
         });
 
+        setContextVariable("bot", bot);
     }
 
     loadTools() {
@@ -68,6 +69,7 @@ class LLM {
                 callbacks: [this.langfuseHandler]
             },
         );
+        console.log(messages);
         return messages.messages[messages.messages.length - 1].content;
     }
 }

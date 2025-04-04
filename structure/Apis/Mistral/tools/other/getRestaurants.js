@@ -1,17 +1,17 @@
 
 const { z } = require("zod");
 const { tool } = require("@langchain/core/tools");
-  
+
 module.exports = (bot, socket) => {
     return tool(
         async () => {
-            return bot.api.hotel.restaurants.getList().map(r => ({
-                name: r.name,
-                description: r.description,
-                opening_hours: r.opening_hours,
-                location: r.location,
-                open: r.is_active,
-            }));
+            return (await bot.api.hotel.restaurants.getList()).map(r => `
+                ${r.name}
+                ${r.description}
+                ${r.opening_hours}
+                ${r.location}
+                ${r.is_active}
+            `).join('\n');
         },
         {
             name: "getRestaurants",
@@ -19,4 +19,4 @@ module.exports = (bot, socket) => {
             description: "Donnes la liste des restaurants",
         }
     );
-}
+};
